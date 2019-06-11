@@ -1,29 +1,51 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.AspNetCore.Mvc;
+using SanookMovie.Models;
 
 namespace SanookMovie.Controllers {
 
     public class MovieController : Controller {
 
-        IList<string> _movies = new List<string>();
+        static IList<Movie> _movies = new List<Movie>();
 
-        public MovieController() {
-            _movies.Add("Titanic");
-            _movies.Add("Avengers");
-            _movies.Add("Alita");
-        }
+        public MovieController() { }
 
         public IActionResult Index() {
             return View(_movies);
         }
-
         public IActionResult Create() {
             return View();
         }
 
-        public IActionResult Delete() {
+        [HttpPost]
+        public IActionResult Create(Movie movie) {
+            movie.Id = _movies.Count + 1;
+            _movies.Add(movie);
+            // return View();
+            return RedirectToAction(nameof(Index));
+        }
+
+        public IActionResult Delete(int id) {
+            var movie = _movies.FirstOrDefault(x => x.Id == id);
+            if (movie == null) return NotFound();
+            return View(movie);
+        }
+
+        public IActionResult DeleteConfirm(int id) {
+            var movie = _movies.FirstOrDefault(x => x.Id == id);
+            if (movie == null) return NotFound();
+            _movies.Remove(movie);
+            return RedirectToAction(nameof(Index));
+        }
+
+        public IActionResult Details() {
             return View();
         }
 
+        public IActionResult Edit() {
+            return View();
+        }
     }
 }
